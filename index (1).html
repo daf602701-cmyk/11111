@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>💖 Lời tỏ tình</title>
+  <meta name="description" content="Trang tỏ tình đơn giản, hiệu ứng tim bay, nút Đồng ý/Không, nhạc nền.">
+  <meta property="og:title" content="💖 Lời tỏ tình dành riêng cho em">
+  <meta property="og:description" content="Bấm vào để nhận bất ngờ nhỏ nhé!">
+  <meta name="theme-color" content="#ff4d6d">
+  <style>
+    :root{
+      --bg1:#ffe6ea; --bg2:#ffd1dc; --bg3:#ffc1cc;
+      --text:#2b2b2b; --accent:#ff4d6d; --white:#fff;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0}
+    body{
+      min-height:100vh; display:grid; place-items:center;
+      background: radial-gradient(circle at 50% 30%, var(--bg1), var(--bg2) 45%, var(--bg3) 80%);
+      font-family: ui-rounded, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Apple Color Emoji","Segoe UI Emoji";
+      color:var(--text); overflow:hidden;
+    }
+    .wrap{
+      width:min(680px, 92vw);
+      background: rgba(255,255,255,.88);
+      border: 1px solid rgba(255,77,109,.18);
+      border-radius: 24px;
+      box-shadow: 0 20px 60px rgba(255,77,109,.25);
+      backdrop-filter: blur(8px);
+      text-align:center;
+      padding: clamp(18px, 4vw, 28px);
+      position:relative;
+      animation: pop .6s ease both;
+    }
+    @keyframes pop{from{transform:scale(.96);opacity:0}to{transform:scale(1);opacity:1}}
+    h1{margin:.2rem 0 .4rem; font-size: clamp(26px,5vw,40px)}
+    p.lead{margin:0 0 1rem; font-size:clamp(15px,3vw,18px); opacity:.9}
+    .img{
+      width:min(380px, 80vw); height:auto; border-radius:18px;
+      box-shadow: 0 10px 30px rgba(255,77,109,.25);
+    }
+    .actions{display:flex; gap:14px; justify-content:center; flex-wrap:wrap; margin-top:16px}
+    .btn{
+      border:none; cursor:pointer; padding:14px 22px; border-radius:999px; font-weight:800;
+      font-size:clamp(15px,3.2vw,17px); transition:.15s transform, .2s box-shadow, .2s background; user-select:none;
+    }
+    .btn:active{transform:translateY(1px)}
+    .yes{background:var(--accent); color:var(--white); box-shadow:0 8px 20px rgba(255,77,109,.35)}
+    .yes:hover{box-shadow:0 10px 24px rgba(255,77,109,.5)}
+    .no{background:#fff; color:#ff4d6d; border:2px solid #ff9fb0}
+    .foot{margin-top:10px; font-size:12px; opacity:.6}
+
+    /* Tim bay */
+    .floaters{position:fixed; inset:0; pointer-events:none; overflow:hidden}
+    .heart{position:absolute; font-size:14px; will-change: transform, opacity; animation: rise linear forwards}
+    @keyframes rise{to{transform:translateY(-120vh) scale(1.4) rotate(20deg); opacity:0}}
+
+    /* Modal */
+    .modal{position:fixed; inset:0; display:none; place-items:center; background:rgba(0,0,0,.35); backdrop-filter: blur(4px); z-index:50}
+    .modal.show{display:grid}
+    .card{
+      width:min(560px, 92vw); background:linear-gradient(140deg,#fff,#ffeef2);
+      border:1px solid rgba(255,77,109,.25); border-radius:24px; padding:24px; text-align:center;
+      box-shadow:0 14px 40px rgba(0,0,0,.2)
+    }
+    .card h2{margin:.2rem 0 .4rem; font-size:clamp(24px,4vw,30px)}
+    .card p{margin:0; font-size:clamp(15px,3vw,18px)}
+
+    /* Confetti */
+    canvas#confetti{position:fixed; inset:0; pointer-events:none; z-index:60}
+
+    /* Music */
+    .music{
+      position:fixed; right:12px; bottom:12px; z-index:40;
+      display:flex; gap:8px; align-items:center; background:rgba(255,255,255,.9);
+      border:1px solid rgba(0,0,0,.08); border-radius:999px; padding:8px 12px; box-shadow:0 6px 20px rgba(0,0,0,.12)
+    }
+    .music button{border:none;background:var(--accent);color:#fff;border-radius:999px;padding:8px 12px;font-weight:700;cursor:pointer}
+    .music small{opacity:.7}
+  </style>
+</head>
+<body>
+  <!-- Hearts background -->
+  <div class="floaters" id="floaters"></div>
+
+  <!-- Main -->
+  <main class="wrap">
+    <h1>Gửi tặng em một trái tim 💘</h1>
+    <p class="lead">Anh có điều này muốn nói… Em <b>đồng ý</b> làm người yêu anh nhé?</p>
+    <img class="img" src="https://raw.githubusercontent.com/Pandat369/name/refs/heads/main/image/heartme.gif" alt="Heart">
+    <div class="actions">
+      <button class="btn yes" id="yesBtn">Đồng ý 💞</button>
+      <button class="btn no" id="noBtn">Không 😜</button>
+    </div>
+    <div class="foot">Made with 💗 by you • share this page to your crush</div>
+  </main>
+
+  <!-- Modal -->
+  <section class="modal" id="modal">
+    <div class="card">
+      <h2>Yêuuu quá đi thôi! 🥰</h2>
+      <p>Tối nay mình đi ăn mừng nhé? Anh sẽ đón em! ✨</p>
+      <div class="actions" style="margin-top:14px">
+        <button class="btn yes" id="okBtn">Ok luôn! 💘</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Confetti -->
+  <canvas id="confetti"></canvas>
+
+  <!-- Music -->
+  <div class="music">
+    <button id="musicToggle">Phát nhạc ♪</button>
+    <small>Nhấn để bật/tắt • có thể dán link MP3 riêng</small>
+    <audio id="player" preload="auto" src="" loop></audio>
+  </div>
+
+  <script>
+    // Hearts floating
+    const floaters = document.getElementById('floaters');
+    const emojis = ['💖','💗','💘','💕','💓','💞','❤️','🩷'];
+    function spawnHeart(){
+      const span = document.createElement('span');
+      span.className = 'heart';
+      span.textContent = emojis[Math.floor(Math.random()*emojis.length)];
+      span.style.left = (Math.random()*100) + 'vw';
+      span.style.bottom = '-40px';
+      span.style.opacity = String(0.6 + Math.random()*0.4);
+      span.style.filter = 'drop-shadow(0 4px 10px rgba(255,77,109,.35))';
+      span.style.animationDuration = (6000 + Math.random()*5000) + 'ms';
+      span.style.transform = `translateY(0) scale(${0.8 + Math.random()*1.2})`;
+      floaters.appendChild(span);
+      setTimeout(()=> span.remove(), 12000);
+    }
+    setInterval(spawnHeart, 500);
+    for(let i=0;i<16;i++) setTimeout(spawnHeart, i*200);
+
+    // No button runs away
+    const noBtn = document.getElementById('noBtn');
+    function moveNo(){
+      const pad = 10;
+      const vw = innerWidth, vh = innerHeight;
+      const w = noBtn.offsetWidth, h = noBtn.offsetHeight;
+      const x = Math.random()*(vw - w - pad*2) + pad;
+      const y = Math.random()*(vh - h - pad*2) + pad;
+      noBtn.style.position = 'fixed';
+      noBtn.style.left = x + 'px';
+      noBtn.style.top = y + 'px';
+    }
+    ['mouseenter','click','touchstart'].forEach(ev=> noBtn.addEventListener(ev, moveNo));
+
+    // Yes → modal + confetti + music
+    const yesBtn = document.getElementById('yesBtn');
+    const modal = document.getElementById('modal');
+    yesBtn.addEventListener('click', ()=>{
+      modal.classList.add('show');
+      boomConfetti();
+      playMusic();
+    });
+    document.getElementById('okBtn').addEventListener('click', ()=>{
+      modal.classList.remove('show');
+      boomConfetti();
+    });
+
+    // Music
+    const player = document.getElementById('player');
+    const toggle = document.getElementById('musicToggle');
+    toggle.addEventListener('click', ()=>{
+      if(!player.src){
+        const url = prompt('Dán link MP3 của bạn vào đây (hoặc OK để dùng nhạc demo):') || '';
+        player.src = url || 'https://cdn.pixabay.com/audio/2022/03/15/audio_4e1d9e6c0b.mp3'; // demo miễn phí
+      }
+      if(player.paused){ player.play(); toggle.textContent='Tắt nhạc ⏸'; }
+      else{ player.pause(); toggle.textContent='Phát nhạc ♪'; }
+    });
+    function playMusic(){
+      if(player.src && player.paused){ player.play().catch(()=>{}); toggle.textContent='Tắt nhạc ⏸'; }
+    }
+
+    // Confetti
+    const canvas = document.getElementById('confetti');
+    const ctx = canvas.getContext('2d');
+    let W = canvas.width = innerWidth, H = canvas.height = innerHeight;
+    addEventListener('resize', ()=>{ W = canvas.width = innerWidth; H = canvas.height = innerHeight; });
+    function boomConfetti(){
+      const pieces = [];
+      const N = 200;
+      for(let i=0;i<N;i++){
+        pieces.push({
+          x: W/2, y: H/2,
+          vx: (Math.random()*2-1)*6,
+          vy: (Math.random()*2-1)*6 - 2,
+          size: 3 + Math.random()*4,
+          rot: Math.random()*Math.PI,
+          vr: (Math.random()*2-1)*.2,
+          life: 60 + Math.random()*40,
+          c: ['#ff4d6d','#ff9fb0','#ffd1dc','#ffc1cc','#ffe6ea'][Math.floor(Math.random()*5)]
+        });
+      }
+      (function tick(){
+        ctx.clearRect(0,0,W,H);
+        pieces.forEach(p=>{
+          p.vy += .08;
+          p.x += p.vx; p.y += p.vy; p.rot += p.vr; p.life -= 1;
+          ctx.save(); ctx.translate(p.x,p.y); ctx.rotate(p.rot);
+          ctx.fillStyle = p.c; ctx.fillRect(-p.size/2,-p.size/2,p.size,p.size);
+          ctx.restore();
+        });
+        for(let i=pieces.length-1;i>=0;i--) if(pieces[i].life<=0 || pieces[i].y>H+20) pieces.splice(i,1);
+        if(pieces.length) requestAnimationFrame(tick);
+      })();
+    }
+  </script>
+</body>
+</html>
